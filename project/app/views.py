@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm,PasswordChangeForm,SetP
 from django.contrib import messages 
 from . import form
 from album.models import Album
+from django.contrib.auth.decorators import login_required
 def home(r):
     if r.user.is_authenticated:
         return redirect('profile')
@@ -11,10 +12,14 @@ def home(r):
     return render(r,'home.html',{'albums':albums,'type':'Home'})
 
 def profile(r):
-    if not r.user.is_authenticated:
-        return redirect('login')
     albums=Album.objects.all()
     return render(r,'profile.html',{'albums':albums,'type':'Profile'})
+
+def edit_albums(r):
+    if not r.user.is_authenticated:
+        return redirect('login')
+    albums=Album.objects.filter(album_added_by=r.user)
+    return render(r,'edit_album.html',{'albums':albums,'type':'Profile','user':r.user})
 
 def signup(r):
     if r.user.is_authenticated:
@@ -82,7 +87,7 @@ def set_password(r):
         return render(r,'form.html',{'form':form1,'type':'Change Password Without Old Password'})
     return render(r,'form.html',{'form':SetPasswordForm(user=r.user),'type':'Change Password Without Old Password'})
     
-
+@login_required
 def edit_profile(r):
     if not r.user.is_authenticated:
         return redirect('login')
@@ -103,6 +108,7 @@ def add_album(r):
         return redirect('login')
     if r.method=='POST':
        form1=form.AddAlbum(r.POST)
+       form1.instance.album_added_by=r.user
        if form1.is_valid():
            form1.save()
            return redirect('profile')
@@ -118,15 +124,32 @@ def add_musician(r):
            return redirect('profile')
     return render(r,'form.html',{'form':form.AddMusician(),'type':'Add Musician'})
 
-
+@login_required
 def edit_album(r,id):
     if not r.user.is_authenticated:
         return redirect('login')
     album=Album.objects.get(pk=id)
-    if r.method=='POST':
-        form1=form.AddAlbum(instance=album)
+    form1=form.AddAlbum(instance=album)
+    print(type(form1.instance.album_added_by))
+    print(type(str(r.user)))
+    if r.method=='POST' and form1.instance.album_added_by==str(r.user):
+        form1=form.AddAlbum(r.POST,instance=album)
         if form1.is_valid():
             form1.save()
             return redirect('profile')
-        return render(r,'form.html',{'form':form1})
-    return render(r,'form.html',{'form':form.AddAlbum(instance=album),'type':'Edit Album'})
+        return render(r,'form.html',{'form':form1,'type':'Edit Album'})
+    return render(r,'form.html',{'form':form1,'type':'Edit Album'})
+
+
+def delete_album(r,id):
+    if not r.user.is_authenticated:
+        return redirect('login')
+    album=Album.objects.get(pk=id)
+    print(album)
+    album.delete()
+    print(album)
+    return redirect('profile')
+    
+
+
+

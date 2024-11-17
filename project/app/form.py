@@ -25,14 +25,17 @@ class EditForm(UserChangeForm):
 
 
 class AddAlbum(forms.ModelForm):
-    releaseDate=forms.DateTimeField(widget=NumberInput(attrs={'type': 'date'}))
+    release_Date=forms.DateTimeField(widget=NumberInput(attrs={'type': 'date'}))
     class Meta:
         model=Album
-        fields='__all__'
+        fields=['name','musician','release_Date','rating']
+        labels={
+            'name':'Album Name:',
+            'musician':'Musician Name:',
+            }
 
 
 class AddMusician(forms.ModelForm):
-    phoneNumber=forms.NumberInput()
     class Meta:
         model=Musician
         fields='__all__'

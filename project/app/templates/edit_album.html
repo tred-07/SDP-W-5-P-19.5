@@ -1,0 +1,38 @@
+{% extends 'base.html' %} 
+{% block title %}Albums{% endblock %} 
+{% block content %}
+<h1 style="text-align: center;">Welcome, <span style="text-transform: capitalize;">{{user}}</span></h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col" style="text-align: center;">Id</th>
+      <th scope="col" style="text-align: center;">Musician Name</th>
+      <th scope="col" style="text-align: center;">Email</th>
+      <th scope="col" style="text-align: center;">Album Rating</th>
+      <th scope="col" style="text-align: center;">Instrument Type</th>
+      <th scope="col" style="text-align: center;">Album Name</th>
+      <th scope="col" style="text-align: center;">Release Date</th>
+      <th scope="col" style="text-align: center;">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for album in albums %}
+    <tr>
+      <td style="text-align: center;">{{album.id}}</td>
+      <td style="text-align: center;">{{album.musician}}</td>
+      <td style="text-align: center;">{{album.musician.email}}</td>
+      <td style="text-align: center;">{{album.rating}}</td>
+      <td style="text-align: center;">{{album.musician.intrumentType}}</td>
+      <td style="text-align: center;">{{album.name}}</td>
+      <td style="text-align: center;">{{album.release_Date}}</td>
+      <td style="text-align: center;">
+        <a href="{% url 'edit_album' album.id %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'delete_album' album.id %}" class="btn btn-warning">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+<input type="date" name="" id="" />
