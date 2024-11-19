@@ -12,6 +12,8 @@ def home(r):
     return render(r,'home.html',{'albums':albums,'type':'Home'})
 
 def profile(r):
+    if not r.user.is_authenticated:
+        return redirect('login')
     albums=Album.objects.all()
     return render(r,'profile.html',{'albums':albums,'type':'Profile'})
 
@@ -52,6 +54,8 @@ def logIn(r):
 
 
 def logOut(r):
+    if not r.user.is_authenticated:
+        return redirect('login')
     logout(r)
     messages.success(r,'Log out Successful')
     return redirect('home')
